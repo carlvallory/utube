@@ -7,7 +7,7 @@ export default NextAuth({
         GoogleProvider({
           clientId: process.env.GOOGLE_CLIENT_ID,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.force-ssl',
+          scope: 'https://www.googleapis.com/auth/youtube.force-ssl',
           authorization: {
             params: {
               prompt: "consent",
@@ -22,6 +22,18 @@ export default NextAuth({
       encryption: true
     },
     callbacks: {
+      async signIn({ user, account, profile, email, credentials }) {
+        if(user) {
+          console.log(user);
+        }
+        if(account) {
+          console.log(account);
+        }
+        if(credentials) {
+          console.log(credentials);
+        }
+        return true
+      },
       async jwt({ token, user, account }) {
         // Persist the OAuth access_token to the token right after signin
         if (account) {
@@ -30,14 +42,24 @@ export default NextAuth({
         if (account?.provider) {
           token.provider = account.provider;
         }
-        if (user) {
-          const refresh_token = await refreshToken(user);
-          // Add the refresh token to the JWT token
-          token.refreshToken = refresh_token;
-        }
+        // if (user) {
+        //   const refresh_token = await refreshToken(user);
+        //   // Add the refresh token to the JWT token
+        //   token.refreshToken = refresh_token;
+        // }
         return Promise.resolve(token);
       },
       async session({ session, token, user }) {
+        if(session) {
+          console.log(session);
+        }
+        if(token) {
+          console.log(token);
+        }
+        if(user) {
+          console.log(user);
+        }
+
         // Retrieve the refresh token
         //const refresh_token = await refreshToken(user);
 
@@ -46,6 +68,12 @@ export default NextAuth({
         session.provider = token.provider;
         //session.user.refreshToken = refresh_token;
         return Promise.resolve(session);
+      },
+      async authorized({ req , token }) {
+        if(token) {
+          console.log(token);
+          return true;
+        }
       },
     },
     debug: false,

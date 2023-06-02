@@ -53,7 +53,7 @@ export default async (req, res) => {
       //   console.log(tokens.access_token);
       // });
 
-      console.log(token.user.refreshToken);
+      //console.log(token.user.refreshToken);
 
       auth.setCredentials({
         access_token: session.accessToken,
